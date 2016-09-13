@@ -1,4 +1,4 @@
-/*!
+	/*!
   Copyright (c) 2016 Jed Watson.
   Licensed under the MIT License (MIT), see
   http://jedwatson.github.io/react-select
@@ -109,6 +109,8 @@ const Select = React.createClass({
 		valueKey: React.PropTypes.string,           // path of the label value in option objects
 		valueRenderer: React.PropTypes.func,        // valueRenderer: function (option) {}
 		wrapperStyle: React.PropTypes.object,       // optional style to apply to the component wrapper
+		displayAll: React.PropTypes.bool,           // Display all the contents in the dropdown, even after selecting few of the entries from it, this is applicable only when multi is true
+		singleValue: React.PropTypes.bool           // Send only a single value to the Custom Value Component
 	},
 
 	statics: { Async, Creatable },
@@ -152,6 +154,7 @@ const Select = React.createClass({
 			tabSelectsValue: true,
 			valueComponent: Value,
 			valueKey: 'value',
+			displayAll: false
 		};
 	},
 
@@ -500,6 +503,16 @@ const Select = React.createClass({
 			case 36: // home key
 				this.focusStartOption();
 			break;
+			case 188: // comma , key
+				if (this.props.allowCreate && this.props.multi) {
+					event.preventDefault();
+					event.stopPropagation();
+					this.selectFocusedOption();
+				} else {
+					return;
+				}
+			break;
+
 			default: return;
 		}
 		event.preventDefault();
@@ -555,12 +568,19 @@ const Select = React.createClass({
 	 */
 	expandValue (value, props) {
 		if (typeof value !== 'string' && typeof value !== 'number') return value;
-		let { options, valueKey } = props;
+		let { options, valueKey, labelKey } = props;
 		if (!options) return;
 		for (var i = 0; i < options.length; i++) {
 			if (options[i][valueKey] === value) return options[i];
 		}
+		if (this.props.allowCreate) {
+			var newOption = {};
+			newOption[valueKey] = value;
+			newOption[labelKey] = value;
+			return newOption;
+		}
 	},
+
 
 	setValue (value) {
 		if (this.props.autoBlur){
@@ -742,6 +762,9 @@ const Select = React.createClass({
 		if (this._focusedOption) {
 			return this.selectValue(this._focusedOption);
 		}
+		else if (this.props.allowCreate && !this.state.focusedOption) {
+			return this.selectValue(this.state.inputValue);
+		}
 	},
 
 	renderLoading () {
@@ -761,22 +784,36 @@ const Select = React.createClass({
 		}
 		let onClick = this.props.onValueClick ? this.handleValueClick : null;
 		if (this.props.multi) {
-			return valueArray.map((value, i) => {
+			if(this.props.singleValue) {
 				return (
 					<ValueComponent
-						id={this._instancePrefix + '-value-' + i}
-						instancePrefix={this._instancePrefix}
-						disabled={this.props.disabled || value.clearableValue === false}
-						key={`value-${i}-${value[this.props.valueKey]}`}
+						disabled={this.props.disabled}
 						onClick={onClick}
 						onRemove={this.removeValue}
-						value={value}
+						values={valueArray}
 					>
-						{renderLabel(value, i)}
-						<span className="Select-aria-only">&nbsp;</span>
+						{valueArray.length}
 					</ValueComponent>
 				);
-			});
+			}
+			else {
+				return valueArray.map((value, i) => {
+					return (
+						<ValueComponent
+							id={this._instancePrefix + '-value-' + i}
+							instancePrefix={this._instancePrefix}
+							disabled={this.props.disabled || value.clearableValue === false}
+							key={`value-${i}-${value[this.props.valueKey]}`}
+							onClick={onClick}
+							onRemove={this.removeValue}
+							value={value}
+						>
+							{renderLabel(value, i)}
+							<span className="Select-aria-only">&nbsp;</span>
+						</ValueComponent>
+					);
+				});
+			}
 		} else if (!this.state.inputValue) {
 			if (isOpen) onClick = null;
 			return (
@@ -1005,9 +1042,9 @@ const Select = React.createClass({
 
 	render () {
 		let valueArray = this.getValueArray(this.props.value);
-		let options =	this._visibleOptions = this.filterOptions(this.props.multi ? this.getValueArray(this.props.value) : null);
+		let options =	this._visibleOptions = this.filterOptions(this.props.multi && !this.props.displayAll ? this.getValueArray(this.props.value) : null);
 		let isOpen = this.state.isOpen;
-		if (this.props.multi && !options.length && valueArray.length && !this.state.inputValue) isOpen = false;
+		if (this.props.multi && !this.props.displayAll && !options.length && valueArray.length && !this.state.inputValue) isOpen = false;
 		const focusedOptionIndex = this.getFocusableOptionIndex(valueArray[0]);
 
 		let focusedOption = null;

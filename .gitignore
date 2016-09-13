@@ -20,6 +20,7 @@ bower_components
 
 # Editor artifacts
 .idea
+*.iml
 
-# Other
+#Other
 .DS_Store
