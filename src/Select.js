@@ -110,7 +110,8 @@ const Select = React.createClass({
 		valueRenderer: React.PropTypes.func,        // valueRenderer: function (option) {}
 		wrapperStyle: React.PropTypes.object,       // optional style to apply to the component wrapper
 		displayAll: React.PropTypes.bool,           // Display all the contents in the dropdown, even after selecting few of the entries from it, this is applicable only when multi is true
-		singleValue: React.PropTypes.bool           // Send only a single value to the Custom Value Component
+		singleValue: React.PropTypes.bool,          // Send only a single value to the Custom Value Component
+		allowCreate: React.PropTypes.bool,          // whether to allow creation of new entries
 	},
 
 	statics: { Async, Creatable },
@@ -154,7 +155,8 @@ const Select = React.createClass({
 			tabSelectsValue: true,
 			valueComponent: Value,
 			valueKey: 'value',
-			displayAll: false
+			displayAll: false,
+			allowCreate: false,
 		};
 	},
 
