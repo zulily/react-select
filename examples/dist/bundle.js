@@ -839,9 +839,9 @@ module.exports = function stripDiacritics(str) {
 
 },{}],"react-select":[function(require,module,exports){
 /*!
-  Copyright (c) 2016 Jed Watson.
-  Licensed under the MIT License (MIT), see
-  http://jedwatson.github.io/react-select
+ Copyright (c) 2016 Jed Watson.
+ Licensed under the MIT License (MIT), see
+ http://jedwatson.github.io/react-select
 */
 
 'use strict';
@@ -989,9 +989,12 @@ var Select = _react2['default'].createClass({
 		valueComponent: _react2['default'].PropTypes.func, // value component to render
 		valueKey: _react2['default'].PropTypes.string, // path of the label value in option objects
 		valueRenderer: _react2['default'].PropTypes.func, // valueRenderer: function (option) {}
-		wrapperStyle: _react2['default'].PropTypes.object },
+		wrapperStyle: _react2['default'].PropTypes.object, // optional style to apply to the component wrapper
+		displayAll: _react2['default'].PropTypes.bool, // Display all the contents in the dropdown, even after selecting few of the entries from it, this is applicable only when multi is true
+		singleValue: _react2['default'].PropTypes.bool, // Send only a single value to the Custom Value Component
+		allowCreate: _react2['default'].PropTypes.bool },
 
-	// optional style to apply to the component wrapper
+	// whether to allow creation of new entries
 	statics: { Async: _Async2['default'], Creatable: _Creatable2['default'] },
 
 	getDefaultProps: function getDefaultProps() {
@@ -1032,7 +1035,9 @@ var Select = _react2['default'].createClass({
 			simpleValue: false,
 			tabSelectsValue: true,
 			valueComponent: _Value2['default'],
-			valueKey: 'value'
+			valueKey: 'value',
+			displayAll: false,
+			allowCreate: false
 		};
 	},
 
@@ -1391,6 +1396,17 @@ var Select = _react2['default'].createClass({
 				// home key
 				this.focusStartOption();
 				break;
+			case 188:
+				// comma , key
+				if (this.props.allowCreate && this.props.multi) {
+					event.preventDefault();
+					event.stopPropagation();
+					this.selectFocusedOption();
+				} else {
+					return;
+				}
+				break;
+
 			default:
 				return;
 		}
@@ -1456,10 +1472,17 @@ var Select = _react2['default'].createClass({
 		if (typeof value !== 'string' && typeof value !== 'number') return value;
 		var options = props.options;
 		var valueKey = props.valueKey;
+		var labelKey = props.labelKey;
 
 		if (!options) return;
 		for (var i = 0; i < options.length; i++) {
 			if (options[i][valueKey] === value) return options[i];
+		}
+		if (this.props.allowCreate) {
+			var newOption = {};
+			newOption[valueKey] = value;
+			newOption[labelKey] = value;
+			return newOption;
 		}
 	},
 
@@ -1652,6 +1675,8 @@ var Select = _react2['default'].createClass({
 	selectFocusedOption: function selectFocusedOption() {
 		if (this._focusedOption) {
 			return this.selectValue(this._focusedOption);
+		} else if (this.props.allowCreate && !this.state.focusedOption) {
+			return this.selectValue(this.state.inputValue);
 		}
 	},
 
@@ -1678,26 +1703,39 @@ var Select = _react2['default'].createClass({
 		}
 		var onClick = this.props.onValueClick ? this.handleValueClick : null;
 		if (this.props.multi) {
-			return valueArray.map(function (value, i) {
+			if (this.props.singleValue) {
 				return _react2['default'].createElement(
 					ValueComponent,
 					{
-						id: _this4._instancePrefix + '-value-' + i,
-						instancePrefix: _this4._instancePrefix,
-						disabled: _this4.props.disabled || value.clearableValue === false,
-						key: 'value-' + i + '-' + value[_this4.props.valueKey],
+						disabled: this.props.disabled,
 						onClick: onClick,
-						onRemove: _this4.removeValue,
-						value: value
+						onRemove: this.removeValue,
+						values: valueArray
 					},
-					renderLabel(value, i),
-					_react2['default'].createElement(
-						'span',
-						{ className: 'Select-aria-only' },
-						' '
-					)
+					valueArray.length
 				);
-			});
+			} else {
+				return valueArray.map(function (value, i) {
+					return _react2['default'].createElement(
+						ValueComponent,
+						{
+							id: _this4._instancePrefix + '-value-' + i,
+							instancePrefix: _this4._instancePrefix,
+							disabled: _this4.props.disabled || value.clearableValue === false,
+							key: 'value-' + i + '-' + value[_this4.props.valueKey],
+							onClick: onClick,
+							onRemove: _this4.removeValue,
+							value: value
+						},
+						renderLabel(value, i),
+						_react2['default'].createElement(
+							'span',
+							{ className: 'Select-aria-only' },
+							' '
+						)
+					);
+				});
+			}
 		} else if (!this.state.inputValue) {
 			if (isOpen) onClick = null;
 			return _react2['default'].createElement(
@@ -1934,9 +1972,9 @@ var Select = _react2['default'].createClass({
 		var _this8 = this;
 
 		var valueArray = this.getValueArray(this.props.value);
-		var options = this._visibleOptions = this.filterOptions(this.props.multi ? this.getValueArray(this.props.value) : null);
+		var options = this._visibleOptions = this.filterOptions(this.props.multi && !this.props.displayAll ? this.getValueArray(this.props.value) : null);
 		var isOpen = this.state.isOpen;
-		if (this.props.multi && !options.length && valueArray.length && !this.state.inputValue) isOpen = false;
+		if (this.props.multi && !this.props.displayAll && !options.length && valueArray.length && !this.state.inputValue) isOpen = false;
 		var focusedOptionIndex = this.getFocusableOptionIndex(valueArray[0]);
 
 		var focusedOption = null;
