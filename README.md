@@ -224,6 +224,24 @@ Property | Type | Description
 `shouldKeyDownEventCreateNewOption` | function | Decides if a keyDown event (eg its `keyCode`) should result in the creation of a new option. ENTER, TAB and comma keys create new options by dfeault. Expected signature: `({ keyCode: number }): boolean` |
 `promptTextCreator` | function | Factory for overriding default option creator prompt label. By default it will read 'Create option "{label}"'. Expected signature: `(label: String): String` |
 
+### Combining Async and Creatable
+
+Use the `AsyncCreatable` HOC if you want both _async_ and _creatable_ functionality.
+It ties `Async` and `Creatable` components together and supports a union of their properties (listed above).
+Use it as follows:
+
+```jsx
+import React from 'react';
+import { AsyncCreatable } from 'react-select';
+
+function render (props) {
+  // props can be a mix of Async, Creatable, and Select properties
+  return (
+    <AsyncCreatable {...props} />
+  );
+}
+```
+
 ### Filtering options
 
 You can control how options are filtered with the following properties:
@@ -267,6 +285,9 @@ The custom `menuRenderer` property accepts the following named parameters:
 | focusedOption | `Object` | The currently focused option; should be visible in the menu by default. |
 | focusOption | `Function` | Callback to focus a new option; receives the option as a parameter. |
 | labelKey | `String` | Option labels are accessible with this string key. |
+| optionClassName | `String` | The className that gets used for options |
+| optionComponent | `ReactClass` | The react component that gets used for rendering an option |
+| optionRenderer | `Function` | The function that gets used to render the content of an option |
 | options | `Array<Object>` | Ordered array of options to render. |
 | selectValue | `Function` | Callback to select a new option; receives the option as a parameter. |
 | valueArray | `Array<Object>` | Array of currently selected options. |
@@ -362,7 +383,6 @@ function onInputKeyDown(event) {
 	placeholder 	|	string\|node	|	'Select ...'	|	field placeholder, displayed when there's no value
 	scrollMenuIntoView |	bool	|	true		|	whether the viewport will shift to display the entire menu when engaged
 	searchable 	|	bool	|	true		|	whether to enable searching feature or not
-	searchingText	|	string	|	'Searching...'	|	message to display whilst options are loading via asyncOptions, or when `isLoading` is true
 	searchPromptText |	string\|node	|	'Type to search'	|	label to prompt for search input
 	tabSelectsValue	|	bool	|	true	|	whether to select the currently focused value when the `[tab]` key is pressed
 	value 		|	any	|	undefined	|	initial field value
