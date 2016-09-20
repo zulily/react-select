@@ -1061,13 +1061,8 @@ var Select = _react2['default'].createClass({
 		singleValue: _react2['default'].PropTypes.bool, // Send only a single value to the Custom Value Component
 		allowCreate: _react2['default'].PropTypes.bool },
 
-<<<<<<< HEAD
 	// whether to allow creation of new entries
-	statics: { Async: _Async2['default'], Creatable: _Creatable2['default'] },
-=======
-	// optional style to apply to the component wrapper
 	statics: { Async: _Async2['default'], AsyncCreatable: _AsyncCreatable2['default'], Creatable: _Creatable2['default'] },
->>>>>>> 2b144481d773807827befd75b443a6a7568b3e1d
 
 	getDefaultProps: function getDefaultProps() {
 		return {
@@ -1551,8 +1546,8 @@ var Select = _react2['default'].createClass({
 		if (valueType !== 'string' && valueType !== 'number' && valueType !== 'boolean') return value;
 		var options = props.options;
 		var valueKey = props.valueKey;
-		var labelKey = props.labelKey;
 
+		var labelKey = props.labelKey;
 		if (!options) return;
 		for (var i = 0; i < options.length; i++) {
 			if (options[i][valueKey] === value) return options[i];
