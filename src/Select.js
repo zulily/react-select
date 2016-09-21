@@ -617,7 +617,17 @@ const Select = React.createClass({
 				inputValue: '',
 				focusedIndex: null
 			}, () => {
-				this.addValue(value);
+				if (this.props.multi && !this.props.displayAll) {
+					this.addValue(value);
+				}
+				else if (this.props.multi && this.props.displayAll) {
+					if (this.containsValue(value)) {
+						this.removeValue(value);
+					} else {
+						this.addValue(value);
+					}
+				}
+
 			});
 		} else {
 			this.setState({
@@ -628,6 +638,11 @@ const Select = React.createClass({
 				this.setValue(value);
 			});
 		}
+	},
+
+	containsValue (value) {
+		var valueArray = this.getValueArray(this.props.value);
+		return valueArray.find(i => i === value) !== undefined;
 	},
 
 	addValue (value) {
