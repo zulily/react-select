@@ -1345,7 +1345,15 @@ var Select = _react2['default'].createClass({
 				inputValue: '',
 				focusedIndex: null
 			}, function () {
-				_this3.addValue(value);
+				if (_this3.props.multi && !_this3.props.displayAll) {
+					_this3.addValue(value);
+				} else if (_this3.props.multi && _this3.props.displayAll) {
+					if (_this3.containsValue(value)) {
+						_this3.removeValue(value);
+					} else {
+						_this3.addValue(value);
+					}
+				}
 			});
 		} else {
 			this.setState({
@@ -1356,6 +1364,13 @@ var Select = _react2['default'].createClass({
 				_this3.setValue(value);
 			});
 		}
+	},
+
+	containsValue: function containsValue(value) {
+		var valueArray = this.getValueArray(this.props.value);
+		return valueArray.find(function (i) {
+			return i === value;
+		}) !== undefined;
 	},
 
 	addValue: function addValue(value) {
