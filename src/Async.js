@@ -19,6 +19,7 @@ const propTypes = {
 		React.PropTypes.string,
 		React.PropTypes.node
 	]),
+	onInputChange: React.PropTypes.func,             // optional for keeping track of what is being typed
 };
 
 const defaultCache = {};
@@ -125,7 +126,7 @@ export default class Async extends Component {
 	}
 
 	_onInputChange (inputValue) {
-		const { ignoreAccents, ignoreCase } = this.props;
+		const { ignoreAccents, ignoreCase, onInputChange } = this.props;
 
 		if (ignoreAccents) {
 			inputValue = stripDiacritics(inputValue);
@@ -133,6 +134,10 @@ export default class Async extends Component {
 
 		if (ignoreCase) {
 			inputValue = inputValue.toLowerCase();
+		}
+
+		if (onInputChange) {
+			onInputChange(inputValue);
 		}
 
 		return this.loadOptions(inputValue);
