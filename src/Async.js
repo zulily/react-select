@@ -78,6 +78,10 @@ export default class Async extends Component {
 		});
 	}
 
+	clearOptions() {
+		this.setState({ options: [] });
+	}
+
 	loadOptions (inputValue) {
 		const { loadOptions } = this.props;
 		const cache = this.cache;
@@ -181,7 +185,13 @@ export default class Async extends Component {
 			noResultsText: this.noResultsText(),
 			placeholder: isLoading ? loadingPlaceholder : placeholder,
 			options: (isLoading && loadingPlaceholder) ? [] : options,
-			ref: (ref) => (this.select = ref)
+			ref: (ref) => (this.select = ref),
+			onChange: (newValues) => {
+				if (this.props.value && (newValues.length > this.props.value.length)) {
+					this.clearOptions();
+				}
+				this.props.onChange(newValues);
+			}
 		};
 
 		return children({
