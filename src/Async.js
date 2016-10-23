@@ -148,13 +148,20 @@ export default class Async extends Component {
 			onInputChange: this._onInputChange
 		});
 	}
+
+  focus () {
+    if(this.refs.select !== null) {
+      this.refs.select.focus();
+    }
+  }
 }
+
 
 Async.propTypes = propTypes;
 Async.defaultProps = defaultProps;
 
 function defaultChildren (props) {
 	return (
-		<Select {...props} />
+		<Select {...props} ref="select"/>
 	);
 };

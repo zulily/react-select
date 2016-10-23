@@ -189,6 +189,13 @@ var Async = (function (_Component) {
 				onInputChange: this._onInputChange
 			}));
 		}
+	}, {
+		key: 'focus',
+		value: function focus() {
+			if (this.refs.select !== null) {
+				this.refs.select.focus();
+			}
+		}
 	}]);
 
 	return Async;
@@ -200,7 +207,7 @@ Async.propTypes = propTypes;
 Async.defaultProps = defaultProps;
 
 function defaultChildren(props) {
-	return _react2['default'].createElement(_Select2['default'], props);
+	return _react2['default'].createElement(_Select2['default'], _extends({}, props, { ref: 'select' }));
 };
 module.exports = exports['default'];
 
