@@ -631,7 +631,7 @@ const Select = React.createClass({
 	},
   
   addRemoveValue: function addRemoveValue(valueObj) {
-    var valueArray = this.getValueArray();
+    var valueArray = this.getValueArray(this.props.value);
     if (!this.arrayContains(valueArray, valueObj.value)) {
       this.setValue(valueArray.concat(valueObj));
     } else {
