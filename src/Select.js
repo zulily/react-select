@@ -44,7 +44,7 @@ const Select = React.createClass({
 	displayName: 'Select',
 
 	propTypes: {
-		addLabelText: React.PropTypes.string,       // placeholder displayed when you want to add a label on a multi-value input
+		LabelText: React.PropTypes.string,       // placeholder displayed when you want to add a label on a multi-value input
 		'aria-label': React.PropTypes.string,       // Aria label (for assistive tech)
 		'aria-labelledby': React.PropTypes.string,	// HTML ID of an element that should be used as the label (for assistive tech)
 		arrowRenderer: React.PropTypes.func,				// Create drop-down caret element
@@ -617,7 +617,7 @@ const Select = React.createClass({
 				inputValue: '',
 				focusedIndex: null
 			}, () => {
-				this.addValue(value);
+				this.addRemoveValue(value);
 			});
 		} else {
 			this.setState({
@@ -629,8 +629,23 @@ const Select = React.createClass({
 			});
 		}
 	},
-
-	addValue (value) {
+  
+  addRemoveValue: function addRemoveValue(valueObj) {
+    var valueArray = this.getValueArray();
+    if (!this.arrayContains(valueArray, valueObj.value)) {
+      this.setValue(valueArray.concat(valueObj));
+    } else {
+      this.removeValue(valueObj);
+    }
+  },  
+  
+  arrayContains: function arrayContains(values, value) {
+    return values.map(function (valueObj) {
+      return valueObj.value;
+    }).indexOf(value) > -1;
+  },
+	
+  addValue (value) {
 		var valueArray = this.getValueArray(this.props.value);
 		this.setValue(valueArray.concat(value));
 	},
