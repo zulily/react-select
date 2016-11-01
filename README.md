@@ -2,6 +2,7 @@
 [![Build Status](https://travis-ci.org/JedWatson/react-select.svg?branch=master)](https://travis-ci.org/JedWatson/react-select)
 [![Coverage Status](https://coveralls.io/repos/JedWatson/react-select/badge.svg?branch=master&service=github)](https://coveralls.io/github/JedWatson/react-select?branch=master)
 [![Supported by Thinkmill](https://thinkmill.github.io/badge/heart.svg)](http://thinkmill.com.au/?utm_source=github&utm_medium=badge&utm_campaign=react-select)
+[![CDNJS](https://img.shields.io/cdnjs/v/react-select.svg)](https://cdnjs.com/libraries/react-select)
 
 React-Select
 ============
@@ -102,7 +103,7 @@ You can enable multi-value selection by setting `multi={true}`. In this mode:
 * The values of the selected items are joined using the `delimiter` prop to create the input value when `joinValues` is true
 * A simple value, if provided, will be split using the `delimiter` prop
 * The `onChange` event provides an array of selected options _or_ a comma-separated string of values (eg `"1,2,3"`) if `simpleValue` is true
-* By default, only options in the `options` array can be selected. Setting `allowCreate` to true allows new options to be created if they do not already exist. *NOTE:* `allowCreate` is not implemented in `1.0.0-beta`, if you need this option please stay on `0.9.x`.
+* By default, only options in the `options` array can be selected. Use the `Creatable` Component (which wraps `Select`) to allow new options to be created if they do not already exist. Hitting comma (','), ENTER or TAB will add a new option. Versions `0.9.x` and below provided a boolean attribute on the `Select` Component (`allowCreate`) to achieve the same functionality. It is no longer available starting with version `1.0.0`.
 * By default, selected options can be cleared. To disable the possibility of clearing a particular option, add `clearableValue: false` to that option:
 ```javascript
 var options = [
@@ -220,8 +221,7 @@ Property | Type | Description
 `isOptionUnique` | function | Searches for any matching option within the set of options. This function prevents duplicate options from being created. By default this is a basic, case-sensitive comparison of label and value. Expected signature: `({ option: Object, options: Array, labelKey: string, valueKey: string }): boolean` |
 `isValidNewOption` | function | Determines if the current input text represents a valid option. By default any non-empty string will be considered valid. Expected signature: `({ label: string }): boolean` |
 `newOptionCreator` | function | Factory to create new option. Expected signature: `({ label: string, labelKey: string, valueKey: string }): Object` |
-`promptTextCreator` | function | Creates prompt/placeholder option text. Expected signature: `(filterText: string): string`
-`shouldKeyDownEventCreateNewOption` | function | Decides if a keyDown event (eg its `keyCode`) should result in the creation of a new option. ENTER, TAB and comma keys create new options by dfeault. Expected signature: `({ keyCode: number }): boolean` |
+`shouldKeyDownEventCreateNewOption` | function | Decides if a keyDown event (eg its `keyCode`) should result in the creation of a new option. ENTER, TAB and comma keys create new options by default. Expected signature: `({ keyCode: number }): boolean` |
 `promptTextCreator` | function | Factory for overriding default option creator prompt label. By default it will read 'Create option "{label}"'. Expected signature: `(label: String): String` |
 
 ### Combining Async and Creatable
@@ -344,6 +344,7 @@ function onInputKeyDown(event) {
 	autoload 	|	bool	|	true		|	whether to auto-load the default async options set
 	autosize  | bool | true  | If enabled, the input will expand as the length of its value increases
 	backspaceRemoves 	|	bool	|	true	|	whether pressing backspace removes the last item when there is no input value
+	backspaceToRemoveMessage	|	string	|	'Press backspace to remove {last label}'	|	prompt shown in input when at least one option in a multiselect is shown, set to '' to clear
 	cache	|	bool	|	true	|	enables the options cache for `asyncOptions` (default: `true`)
 	className 	|	string	|	undefined	|	className for the outer element
 	clearable 	|	bool	|	true		|	should it be possible to reset value
@@ -371,7 +372,7 @@ function onInputKeyDown(event) {
 	onBlurResetsInput	|	bool	|	true	|	whether to clear input on blur or not
 	onChange 	|	func	|	undefined	|	onChange handler: `function(newValue) {}`
 	onClose		|	func	|	undefined	|	handler for when the menu closes: `function () {}`
-	onCloseResetInput | bool  | true  | whether to clear input when closing the menu through the arrow
+	onCloseResetsInput | bool  | true  | whether to clear input when closing the menu through the arrow
 	onFocus 	|	func	|	undefined	|	onFocus handler: `function(event) {}`
 	onInputChange	|	func	|	undefined	|	onInputChange handler: `function(inputValue) {}`
 	onInputKeyDown	|	func	|	undefined	|	input keyDown handler; call `event.preventDefault()` to override default `Select` behavior: `function(event) {}`

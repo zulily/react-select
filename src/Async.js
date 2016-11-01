@@ -8,22 +8,34 @@ const propTypes = {
 	children: React.PropTypes.func.isRequired,       // Child function responsible for creating the inner Select component; (props: Object): PropTypes.element
 	ignoreAccents: React.PropTypes.bool,             // strip diacritics when filtering; defaults to true
 	ignoreCase: React.PropTypes.bool,                // perform case-insensitive filtering; defaults to true
-	loadingPlaceholder: PropTypes.string.isRequired, // replaces the placeholder while options are loading
+	loadingPlaceholder: React.PropTypes.oneOfType([  // replaces the placeholder while options are loading
+		React.PropTypes.string,
+		React.PropTypes.node
+	]),
 	loadOptions: React.PropTypes.func.isRequired,    // callback to load options asynchronously; (inputValue: string, callback: Function): ?Promise
 	options: PropTypes.array.isRequired,             // array of options
 	placeholder: React.PropTypes.oneOfType([         // field placeholder, displayed when there's no value (shared with Select)
 		React.PropTypes.string,
 		React.PropTypes.node
 	]),
+	noResultsText: React.PropTypes.oneOfType([       // field noResultsText, displayed when no options come back from the server
+		React.PropTypes.string,
+		React.PropTypes.node
+	]),
+	onChange: React.PropTypes.func,                  // onChange handler: function (newValue) {}
 	searchPromptText: React.PropTypes.oneOfType([    // label to prompt for search input
 		React.PropTypes.string,
 		React.PropTypes.node
 	]),
+	onInputChange: React.PropTypes.func,             // optional for keeping track of what is being typed
+	value: React.PropTypes.any,                      // initial field value
 };
+
+const defaultCache = {};
 
 const defaultProps = {
 	autoload: true,
-	cache: {},
+	cache: defaultCache,
 	children: defaultChildren,
 	ignoreAccents: true,
 	ignoreCase: true,
@@ -35,6 +47,8 @@ const defaultProps = {
 export default class Async extends Component {
 	constructor (props, context) {
 		super(props, context);
+
+		this._cache = props.cache === defaultCache ? {} : props.cache;
 
 		this.state = {
 			isLoading: false,
@@ -63,8 +77,13 @@ export default class Async extends Component {
 		});
 	}
 
+	clearOptions() {
+		this.setState({ options: [] });
+	}
+
 	loadOptions (inputValue) {
-		const { cache, loadOptions } = this.props;
+		const { loadOptions } = this.props;
+		const cache = this._cache;
 
 		if (
 			cache &&
@@ -118,7 +137,7 @@ export default class Async extends Component {
 	}
 
 	_onInputChange (inputValue) {
-		const { ignoreAccents, ignoreCase } = this.props;
+		const { ignoreAccents, ignoreCase, onInputChange } = this.props;
 
 		if (ignoreAccents) {
 			inputValue = stripDiacritics(inputValue);
@@ -128,17 +147,50 @@ export default class Async extends Component {
 			inputValue = inputValue.toLowerCase();
 		}
 
+		if (onInputChange) {
+			onInputChange(inputValue);
+		}
+
 		return this.loadOptions(inputValue);
 	}
 
+	inputValue() {
+		if (this.select) {
+			return this.select.state.inputValue;
+		}
+		return '';
+	}
+
+	noResultsText() {
+		const { loadingPlaceholder, noResultsText, searchPromptText } = this.props;
+		const { isLoading } = this.state;
+
+		const inputValue = this.inputValue();
+
+		if (isLoading) {
+			return loadingPlaceholder;
+		}
+		if (inputValue && noResultsText) {
+			return noResultsText;
+		}
+		return searchPromptText;
+	}
+
 	render () {
-		const { children, loadingPlaceholder, placeholder, searchPromptText } = this.props;
+		const { children, loadingPlaceholder, placeholder } = this.props;
 		const { isLoading, options } = this.state;
 
 		const props = {
-			noResultsText: isLoading ? loadingPlaceholder : searchPromptText,
+			noResultsText: this.noResultsText(),
 			placeholder: isLoading ? loadingPlaceholder : placeholder,
-			options: isLoading ? [] : options
+			options: (isLoading && loadingPlaceholder) ? [] : options,
+			ref: (ref) => (this.select = ref),
+			onChange: (newValues) => {
+				if (this.props.value && (newValues.length > this.props.value.length)) {
+					this.clearOptions();
+				}
+				this.props.onChange(newValues);
+			}
 		};
 
 		return children({
