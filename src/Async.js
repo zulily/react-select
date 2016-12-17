@@ -186,7 +186,7 @@ export default class Async extends Component {
 			options: (isLoading && loadingPlaceholder) ? [] : options,
 			ref: (ref) => (this.select = ref),
 			onChange: (newValues) => {
-				newValuesExist = typeof newValues !== '' && newValues !== null;
+				var newValuesExist = typeof newValues !== '' && newValues !== null;
 				if (this.props.value && newValuesExist && newValues.length > this.props.value.length) {
 					this.clearOptions();
 				}
