@@ -114,6 +114,7 @@ const Select = React.createClass({
 		displayAll: React.PropTypes.bool,           // Display all the contents in the dropdown, even after selecting few of the entries from it, this is applicable only when multi is true
 		singleValue: React.PropTypes.bool,          // Send only a single value to the Custom Value Component
 		allowCreate: React.PropTypes.bool,          // whether to allow creation of new entries
+    	disabledOptions: React.PropTypes.array     // tells which tags are disabled
 	},
 
 	statics: { Async, AsyncCreatable, Creatable },
@@ -830,6 +831,7 @@ const Select = React.createClass({
 						onClick={onClick}
 						onRemove={this.removeValue}
 						values={valueArray}
+						disabledOptions={this.props.disabledOptions || []}
 					>
 						{valueArray.length}
 					</ValueComponent>
@@ -846,6 +848,7 @@ const Select = React.createClass({
 							onClick={onClick}
 							onRemove={this.removeValue}
 							value={value}
+              				disabledOptions={this.props.disabledOptions || []}
 						>
 							{renderLabel(value, i)}
 							<span className="Select-aria-only">&nbsp;</span>
@@ -1085,7 +1088,6 @@ const Select = React.createClass({
 			</div>
 		);
 	},
-
 	render () {
 		let valueArray = this.getValueArray(this.props.value);
 		let options =	this._visibleOptions = this.filterOptions(this.props.multi && !this.props.displayAll ? this.getValueArray(this.props.value) : null);
