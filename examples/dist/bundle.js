@@ -1670,6 +1670,9 @@ var Select = _react2['default'].createClass({
 		//NOTE: update value in the callback to make sure the input value is empty so that there are no styling issues (Chrome had issue otherwise)
 		this.hasScrolledToOption = false;
 		if (this.props.multi) {
+			if (this.props.allowCreate) {
+				value = expandValue(value, this.props);
+			}
 			this.setState({
 				inputValue: '',
 				focusedIndex: null

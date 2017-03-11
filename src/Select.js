@@ -626,6 +626,9 @@ const Select = React.createClass({
 		//NOTE: update value in the callback to make sure the input value is empty so that there are no styling issues (Chrome had issue otherwise)
 		this.hasScrolledToOption = false;
 		if (this.props.multi) {
+			if (this.props.allowCreate) {
+				value = expandValue(value, this.props);
+			}
 			this.setState({
 				inputValue: '',
 				focusedIndex: null
@@ -642,7 +645,7 @@ const Select = React.createClass({
 			});
 		}
 	},
-  
+
   addRemoveValue: function addRemoveValue(valueObj) {
     var valueArray = this.getValueArray(this.props.value);
     if (!this.arrayContains(valueArray, valueObj.value)) {
@@ -650,14 +653,14 @@ const Select = React.createClass({
     } else {
       this.removeValue(valueObj);
     }
-  },  
-  
+  },
+
   arrayContains: function arrayContains(values, value) {
     return values.map(function (valueObj) {
       return valueObj.value;
     }).indexOf(value) > -1;
   },
-	
+
   addValue (value) {
 		var valueArray = this.getValueArray(this.props.value);
 		this.setValue(valueArray.concat(value));
