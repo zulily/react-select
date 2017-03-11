@@ -627,7 +627,7 @@ const Select = React.createClass({
 		this.hasScrolledToOption = false;
 		if (this.props.multi) {
 			if (this.props.allowCreate) {
-				value = expandValue(value, this.props);
+				value = this.expandValue(value, this.props);
 			}
 			this.setState({
 				inputValue: '',
