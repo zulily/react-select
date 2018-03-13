@@ -684,7 +684,6 @@ const Select = React.createClass({
 		}
 		event.stopPropagation();
 		event.preventDefault();
-    console.log this.props
 		this.setValue(this.getResetValue());
 		this.setState({
 			isOpen: false,
@@ -971,6 +970,8 @@ const Select = React.createClass({
 	filterOptions (excludeOptions) {
 		var filterValue = this.state.inputValue;
 		var options = this.props.options || [];
+    if !filterValue? && options == [] && this.props.collection.models.length > 1
+      options = this.props.collection.models
 		if (this.props.filterOptions) {
 			// Maintain backwards compatibility with boolean attribute
 			const filterOptions = typeof this.props.filterOptions === 'function'
