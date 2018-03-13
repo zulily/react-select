@@ -684,6 +684,7 @@ const Select = React.createClass({
 		}
 		event.stopPropagation();
 		event.preventDefault();
+    console.log this.props
 		this.setValue(this.getResetValue());
 		this.setState({
 			isOpen: false,
