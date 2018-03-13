@@ -970,8 +970,9 @@ const Select = React.createClass({
 	filterOptions (excludeOptions) {
 		var filterValue = this.state.inputValue;
 		var options = this.props.options || [];
-    if !filterValue? && options == [] && this.props.collection.models.length > 1
+    if (!filterValue? && options == [] && this.props.collection.models.length > 1){
       options = this.props.collection.models
+    }
 		if (this.props.filterOptions) {
 			// Maintain backwards compatibility with boolean attribute
 			const filterOptions = typeof this.props.filterOptions === 'function'
