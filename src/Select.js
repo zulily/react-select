@@ -970,7 +970,7 @@ const Select = React.createClass({
 	filterOptions (excludeOptions) {
 		var filterValue = this.state.inputValue;
 		var options = this.props.options || [];
-    if (!filterValue? && options == [] && this.props.collection.models.length > 1){
+    if (filterValue !== null && options == [] && this.props.collection.models.length > 0){
       options = this.props.collection.models
     }
 		if (this.props.filterOptions) {
