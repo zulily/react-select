@@ -838,25 +838,27 @@ const Select = React.createClass({
 				);
 			}
 			else {
-        if @props.autoFillInputWithValue && isOpen
-          <div>Open</div>
-				return valueArray.map((value, i) => {
-					return (
-						<ValueComponent
-							id={this._instancePrefix + '-value-' + i}
-							instancePrefix={this._instancePrefix}
-							disabled={this.props.disabled || value.clearableValue === false}
-							key={`value-${i}-${value[this.props.valueKey]}`}
-							onClick={onClick}
-							onRemove={this.removeValue}
-							value={value}
-              				disabledOptions={this.props.disabledOptions || []}
-						>
-							{renderLabel(value, i)}
-							<span className="Select-aria-only">&nbsp;</span>
-						</ValueComponent>
-					);
-				});
+        if(this.props.autoFillInputWithValue && isOpen) {
+          return <div>Open</div>
+        }
+        else
+  				return valueArray.map((value, i) => {
+  					return (
+  						<ValueComponent
+  							id={this._instancePrefix + '-value-' + i}
+  							instancePrefix={this._instancePrefix}
+  							disabled={this.props.disabled || value.clearableValue === false}
+  							key={`value-${i}-${value[this.props.valueKey]}`}
+  							onClick={onClick}
+  							onRemove={this.removeValue}
+  							value={value}
+                				disabledOptions={this.props.disabledOptions || []}
+  						>
+  							{renderLabel(value, i)}
+  							<span className="Select-aria-only">&nbsp;</span>
+  						</ValueComponent>
+  					);
+  				});
 			}
 		} else if (!this.state.inputValue) {
 			if (isOpen) onClick = null;
