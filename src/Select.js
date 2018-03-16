@@ -838,6 +838,8 @@ const Select = React.createClass({
 				);
 			}
 			else {
+        if @props.autoFillInputWithValue && isOpen
+          <div>Open</div>
 				return valueArray.map((value, i) => {
 					return (
 						<ValueComponent
@@ -970,9 +972,6 @@ const Select = React.createClass({
 	filterOptions (excludeOptions) {
 		var filterValue = this.state.inputValue;
 		var options = this.props.options || [];
-    if (filterValue !== null && options == [] && this.props.collection.models.length > 0){
-      options = this.props.collection.models
-    }
 		if (this.props.filterOptions) {
 			// Maintain backwards compatibility with boolean attribute
 			const filterOptions = typeof this.props.filterOptions === 'function'
