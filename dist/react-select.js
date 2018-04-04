@@ -641,8 +641,6 @@ Value.propTypes = {
 	value: PropTypes.object.isRequired // the option object for this value
 };
 
-var _this = undefined;
-
 /*!
   Copyright (c) 2018 Jed Watson.
   Licensed under the MIT License (MIT), see
@@ -695,10 +693,10 @@ var expandValue = function expandValue(value, props) {
 	    valueKey = props.valueKey;
 
 	if (!options) return;
-	for (var _i = 0; _i < options.length; _i++) {
-		if (String(options[_i][valueKey]) === String(value)) return options[_i];
+	for (var i = 0; i < options.length; i++) {
+		if (String(options[i][valueKey]) === String(value)) return options[i];
 	}
-	if (_this.props.allowCreate) {
+	if (props.allowCreate) {
 		var newOption = {};
 		newOption[valueKey] = value;
 		newOption[labelKey] = value;
@@ -717,20 +715,20 @@ var Select$1 = function (_React$Component) {
 	function Select(props) {
 		classCallCheck(this, Select);
 
-		var _this2 = possibleConstructorReturn(this, (Select.__proto__ || Object.getPrototypeOf(Select)).call(this, props));
+		var _this = possibleConstructorReturn(this, (Select.__proto__ || Object.getPrototypeOf(Select)).call(this, props));
 
 		['clearValue', 'focusOption', 'getOptionLabel', 'handleInputBlur', 'handleInputChange', 'handleInputFocus', 'handleInputValueChange', 'handleKeyDown', 'handleMenuScroll', 'handleMouseDown', 'handleMouseDownOnArrow', 'handleMouseDownOnMenu', 'handleTouchEnd', 'handleTouchEndClearValue', 'handleTouchMove', 'handleTouchOutside', 'handleTouchStart', 'handleValueClick', 'onOptionRef', 'removeValue', 'selectValue'].forEach(function (fn) {
-			return _this2[fn] = _this2[fn].bind(_this2);
+			return _this[fn] = _this[fn].bind(_this);
 		});
 
-		_this2.state = {
+		_this.state = {
 			inputValue: '',
 			isFocused: false,
 			isOpen: false,
 			isPseudoFocused: false,
 			required: false
 		};
-		return _this2;
+		return _this;
 	}
 
 	createClass(Select, [{
@@ -1279,7 +1277,7 @@ var Select$1 = function (_React$Component) {
 	}, {
 		key: 'setValue',
 		value: function setValue(value) {
-			var _this3 = this;
+			var _this2 = this;
 
 			if (this.props.autoBlur) {
 				this.blurInput();
@@ -1290,7 +1288,7 @@ var Select$1 = function (_React$Component) {
 			}
 			if (this.props.simpleValue && value) {
 				value = this.props.multi ? value.map(function (i) {
-					return i[_this3.props.valueKey];
+					return i[_this2.props.valueKey];
 				}).join(this.props.delimiter) : value[this.props.valueKey];
 			}
 			if (this.props.onChange) {
@@ -1300,7 +1298,7 @@ var Select$1 = function (_React$Component) {
 	}, {
 		key: 'selectValue',
 		value: function selectValue(value) {
-			var _this4 = this;
+			var _this3 = this;
 
 			// NOTE: we actually add/set the value in a callback to make sure the
 			// input value is empty to avoid styling issues in Chrome
@@ -1317,13 +1315,13 @@ var Select$1 = function (_React$Component) {
 					inputValue: this.handleInputValueChange(updatedValue),
 					isOpen: !this.props.closeOnSelect
 				}, function () {
-					var valueArray = _this4.getValueArray(_this4.props.value);
+					var valueArray = _this3.getValueArray(_this3.props.value);
 					if (valueArray.some(function (i) {
-						return i[_this4.props.valueKey] === value[_this4.props.valueKey];
+						return i[_this3.props.valueKey] === value[_this3.props.valueKey];
 					})) {
-						_this4.removeValue(value);
+						_this3.removeValue(value);
 					} else {
-						_this4.addValue(value);
+						_this3.addValue(value);
 					}
 				});
 			} else {
@@ -1332,7 +1330,7 @@ var Select$1 = function (_React$Component) {
 					isOpen: !this.props.closeOnSelect,
 					isPseudoFocused: this.state.isFocused
 				}, function () {
-					_this4.setValue(value);
+					_this3.setValue(value);
 				});
 			}
 		}
@@ -1364,11 +1362,11 @@ var Select$1 = function (_React$Component) {
 	}, {
 		key: 'removeValue',
 		value: function removeValue(value) {
-			var _this5 = this;
+			var _this4 = this;
 
 			var valueArray = this.getValueArray(this.props.value);
 			this.setValue(valueArray.filter(function (i) {
-				return i[_this5.props.valueKey] !== value[_this5.props.valueKey];
+				return i[_this4.props.valueKey] !== value[_this4.props.valueKey];
 			}));
 			this.focus();
 		}
@@ -1461,9 +1459,9 @@ var Select$1 = function (_React$Component) {
 			}
 			if (!options.length) return;
 			var focusedIndex = -1;
-			for (var _i2 = 0; _i2 < options.length; _i2++) {
-				if (this._focusedOption === options[_i2].option) {
-					focusedIndex = _i2;
+			for (var i = 0; i < options.length; i++) {
+				if (this._focusedOption === options[i].option) {
+					focusedIndex = i;
 					break;
 				}
 			}
@@ -1531,6 +1529,8 @@ var Select$1 = function (_React$Component) {
 	}, {
 		key: 'renderValue',
 		value: function renderValue(valueArray, isOpen) {
+			var _this5 = this;
+
 			var renderLabel = this.props.valueRenderer || this.getOptionLabel;
 			var ValueComponent = this.props.valueComponent;
 			if (!valueArray.length) {
@@ -1544,22 +1544,30 @@ var Select$1 = function (_React$Component) {
 			var onClick = this.props.onValueClick ? this.handleValueClick : null;
 			if (this.props.multi) {
 				if (this.props.singleValue) {
+					valueArray = [valueArray[0]];
+				}
+				return valueArray.map(function (value, i) {
 					return React__default.createElement(
 						ValueComponent,
 						{
-							disabled: this.props.disabled,
-							disabledOptions: this.props.disabledOptions || [],
-							id: this._instancePrefix + '-value-' + i,
-							instancePrefix: this._instancePrefix,
-							key: 'value-' + i + '-' + value[this.props.valueKey],
+							disabled: _this5.props.disabled || value.clearableValue === false,
+							disabledOptions: _this5.props.disabledOptions || [],
+							id: _this5._instancePrefix + '-value-' + i,
+							instancePrefix: _this5._instancePrefix,
+							key: 'value-' + i + '-' + value[_this5.props.valueKey],
 							onClick: onClick,
-							onRemove: this.removeValue,
-							placeholder: this.props.placeholder,
-							values: valueArray
+							onRemove: _this5.removeValue,
+							placeholder: _this5.props.placeholder,
+							value: value
 						},
-						valueArray.length
+						renderLabel(value, i),
+						React__default.createElement(
+							'span',
+							{ className: 'Select-aria-only' },
+							'\xA0'
+						)
 					);
-				}
+				});
 			} else if (shouldShowValue(this.state, this.props)) {
 				if (isOpen) onClick = null;
 				return React__default.createElement(
@@ -1765,7 +1773,7 @@ var Select$1 = function (_React$Component) {
 
 			if (!this.props.name) return;
 			if (this.props.joinValues) {
-				var _value = valueArray.map(function (i) {
+				var value = valueArray.map(function (i) {
 					return stringifyValue(i[_this7.props.valueKey]);
 				}).join(this.props.delimiter);
 				return React__default.createElement('input', {
@@ -1775,7 +1783,7 @@ var Select$1 = function (_React$Component) {
 						return _this7.value = _ref3;
 					},
 					type: 'hidden',
-					value: _value
+					value: value
 				});
 			}
 			return valueArray.map(function (item, index) {
@@ -1811,8 +1819,8 @@ var Select$1 = function (_React$Component) {
 				}
 			}
 
-			for (var _i3 = 0; _i3 < options.length; _i3++) {
-				if (!options[_i3].disabled) return _i3;
+			for (var i = 0; i < options.length; i++) {
+				if (!options[i].disabled) return i;
 			}
 			return null;
 		}
@@ -1855,9 +1863,9 @@ var Select$1 = function (_React$Component) {
 			var _this9 = this;
 
 			var valueArray = this.getValueArray(this.props.value);
-			var options = this._visibleOptions = this.filterOptions(this.props.multi && !this.props.displayAll && this.props.removeSelected ? valueArray : null);
+			var options = this._visibleOptions = this.filterOptions(this.props.multi && this.props.removeSelected ? valueArray : null);
 			var isOpen = this.state.isOpen;
-			if (this.props.multi && !this.props.displayAll && !options.length && valueArray.length && !this.state.inputValue) isOpen = false;
+			if (this.props.multi && !options.length && valueArray.length && !this.state.inputValue) isOpen = false;
 			var focusedOptionIndex = this.getFocusableOptionIndex(valueArray[0]);
 
 			var focusedOption = null;
@@ -2256,42 +2264,14 @@ var Async = function (_Component) {
 			this.select.focus();
 		}
 	}, {
-		key: 'inputValue',
-		value: function inputValue() {
-			if (this.select) {
-				return this.select.state.inputValue;
-			}
-			return '';
-		}
-	}, {
-		key: 'noResultsText',
-		value: function noResultsText() {
-			var _props3 = this.props,
-			    loadingPlaceholder = _props3.loadingPlaceholder,
-			    noResultsText = _props3.noResultsText,
-			    searchPromptText = _props3.searchPromptText;
-			var isLoading = this.state.isLoading;
-
-
-			var inputValue = this.inputValue();
-
-			if (isLoading) {
-				return loadingPlaceholder;
-			}
-			if (inputValue && noResultsText) {
-				return noResultsText;
-			}
-			return searchPromptText;
-		}
-	}, {
 		key: 'render',
 		value: function render() {
 			var _this3 = this;
 
-			var _props4 = this.props,
-			    children = _props4.children,
-			    loadingPlaceholder = _props4.loadingPlaceholder,
-			    placeholder = _props4.placeholder;
+			var _props3 = this.props,
+			    children = _props3.children,
+			    loadingPlaceholder = _props3.loadingPlaceholder,
+			    placeholder = _props3.placeholder;
 			var _state2 = this.state,
 			    isLoading = _state2.isLoading,
 			    options = _state2.options;
@@ -2310,13 +2290,6 @@ var Async = function (_Component) {
 				isLoading: isLoading,
 				onInputChange: this.onInputChange
 			}));
-		}
-	}, {
-		key: 'focus',
-		value: function focus() {
-			if (this.refs.select !== null) {
-				this.refs.select.focus();
-			}
 		}
 	}]);
 	return Async;
