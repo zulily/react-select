@@ -15,13 +15,11 @@ var expect = unexpected
 
 var React = require('react');
 var ReactDOM = require('react-dom');
-var TestUtils = require('react-addons-test-utils');
-var Select = require('../src/Select');
+var TestUtils = require('react-dom/test-utils');
+var Select = require('../src');
 
 describe('Creatable', () => {
-	let creatableInstance, creatableNode, filterInputNode, innserSelectInstance, renderer;
-
-	beforeEach(() => renderer = TestUtils.createRenderer());
+	let creatableInstance, creatableNode, filterInputNode, innerSelectInstance;
 
 	const defaultOptions = [
 		{ value: 'one', label: 'One' },
@@ -36,7 +34,7 @@ describe('Creatable', () => {
 			<Select.Creatable {...props} />
 		);
 		creatableNode = ReactDOM.findDOMNode(creatableInstance);
-		innserSelectInstance = creatableInstance.select;
+		innerSelectInstance = creatableInstance.select;
 		findAndFocusInputControl();
 	};
 
@@ -106,7 +104,7 @@ describe('Creatable', () => {
 		createControl({
 			filterOptions: () => null
 		});
-		typeSearchText('test');;
+		typeSearchText('test');
 	});
 
 	it('should not show a "create..." prompt if current filter text is not a valid option (as determined by :isValidNewOption prop)', () => {
@@ -150,12 +148,33 @@ describe('Creatable', () => {
 		const options = [{ label: 'One', value: 1 }];
 		createControl({
 			options,
-			shouldKeyDownEventCreateNewOption: ({ keyCode }) => keyCode === 13
 		});
 		typeSearchText('on'); // ['Create option "on"', 'One']
 		TestUtils.Simulate.keyDown(filterInputNode, { keyCode: 40, key: 'ArrowDown' }); // Select 'One'
 		TestUtils.Simulate.keyDown(filterInputNode, { keyCode: 13 });
 		expect(options, 'to have length', 1);
+	});
+
+	it('should remove the new option after closing on selecting option', () => {
+		createControl();
+		typeSearchText('9');
+		TestUtils.Simulate.keyDown(filterInputNode, { keyCode: 40, key: 'ArrowDown' });
+		TestUtils.Simulate.keyDown(filterInputNode, { keyCode: 13 });
+		expect(creatableInstance.inputValue, 'to equal', '');
+	});
+
+	it('should remove the new option after closing on escape', () => {
+		createControl();
+		typeSearchText('9');
+		TestUtils.Simulate.keyDown(filterInputNode, { keyCode: 27 });
+		expect(creatableInstance.inputValue, 'to equal', '');
+	});
+
+	it('should remove the new option after closing on blur', () => {
+		createControl();
+		typeSearchText('9');
+		TestUtils.Simulate.blur(filterInputNode);
+		expect(creatableInstance.inputValue, 'to equal', '');
 	});
 
 	it('should allow a custom select type to be rendered via the :children property', () => {
@@ -201,6 +220,46 @@ describe('Creatable', () => {
 		expect(test(newOption('Foo', 11)), 'to be', true);
 	});
 
+	it('default: isOptionUnique function should always return true if given options are empty', () => {
+		const options = [];
+
+		function newOption (label, value) {
+			return { label, value };
+		};
+
+		function test (option) {
+			return Select.Creatable.isOptionUnique({
+				option,
+				options,
+				labelKey: 'label',
+				valueKey: 'value'
+			});
+		};
+
+		expect(test(newOption('foo', 0)), 'to be', true);
+		expect(test(newOption('qux', 1)), 'to be', true);
+	});
+
+	it('default: isOptionUnique function should not crash if given options are null or undefined', () => {
+		const options = null;
+
+		function newOption (label, value) {
+			return { label, value };
+		};
+
+		function test (option) {
+			return Select.Creatable.isOptionUnique({
+				option,
+				options,
+				labelKey: 'label',
+				valueKey: 'value'
+			});
+		};
+
+		expect(test(newOption('foo', 0)), 'to be', true);
+		expect(test(newOption('qux', 1)), 'to be', true);
+	});
+
 	it('default :isValidNewOption function should just ensure a non-empty string is provided', () => {
 		function test (label) {
 			return Select.Creatable.isValidNewOption({ label });
@@ -236,5 +295,34 @@ describe('Creatable', () => {
 	it('default :onInputKeyDown should run user provided handler.', (done) => {
 		createControl({ onInputKeyDown: event => done() });
 		return creatableInstance.onInputKeyDown({ keyCode: 97 });
+	});
+
+	it('default :onInputChange should run user provided handler.', (done) => {
+		createControl({ onInputChange: value => done() });
+		return creatableInstance.onInputChange('a');
+	});
+
+	it(':onInputChange should return the changed input value', () => {
+		createControl({ onInputChange: value => 'a' });
+
+		function test (value) {
+			return creatableInstance.onInputChange(value);
+		}
+
+		expect(test('a'), 'to be', 'a');
+		expect(test('b'), 'to be', 'a');
+	});
+
+	describe('.focus()', () => {
+		beforeEach(() => {
+			createControl({});
+			TestUtils.Simulate.blur(filterInputNode);
+		});
+
+		it('focuses the search input', () => {
+			expect(filterInputNode, 'not to equal', document.activeElement);
+			creatableInstance.focus();
+			expect(filterInputNode, 'to equal', document.activeElement);
+		});
 	});
 });

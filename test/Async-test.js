@@ -1,4 +1,5 @@
 'use strict';
+/* global describe, it, beforeEach */
 /* eslint react/jsx-boolean-value: 0 */
 
 // Emulating the DOM here, only so that if this test file gets
@@ -17,10 +18,10 @@ var expect = unexpected
 
 var React = require('react');
 var ReactDOM = require('react-dom');
-var TestUtils = require('react-addons-test-utils');
+var TestUtils = require('react-dom/test-utils');
 var sinon = require('sinon');
 
-var Select = require('../src/Select');
+var Select = require('../src');
 
 describe('Async', () => {
 	let asyncInstance, asyncNode, filterInputNode, loadOptions;
@@ -31,8 +32,8 @@ describe('Async', () => {
 			<Select.Async
 				autoload={false}
 				openOnFocus
-				{...props}
 				loadOptions={loadOptions}
+				{...props}
 			/>
 		);
 		asyncNode = ReactDOM.findDOMNode(asyncInstance);
@@ -144,6 +145,35 @@ describe('Async', () => {
 			});
 			typeSearchText('te');
 			return expect(asyncNode.textContent, 'to contain', 'Loading');
+		});
+
+		it('caches the result of all option fetches', (cb) => {
+			const res = {
+				t: createOptionsResponse(['t']),
+				te: createOptionsResponse(['te']),
+				tes: createOptionsResponse(['tes']),
+			};
+			function loadOptions (input, resolve) {
+				const delay = 10 * (3 - input.length);
+				setTimeout(function() {
+					resolve(null, res[input]);
+				}, delay);
+			}
+			createControl({
+				loadOptions,
+			});
+			const instance = asyncInstance;
+			typeSearchText('t');
+			typeSearchText('te');
+			typeSearchText('tes');
+
+			// TODO: How to test this?
+			setTimeout(function() {
+				expect(instance._cache.t, 'to equal', res.t.options);
+				expect(instance._cache.te, 'to equal', res.te.options);
+				expect(instance._cache.tes, 'to equal', res.tes.options);
+				cb();
+			}, 30);
 		});
 
 		describe('with callbacks', () => {
@@ -319,6 +349,15 @@ describe('Async', () => {
 			typeSearchText('WÄRE');
 			expect(loadOptions, 'was called with', 'WÄRE');
 		});
+
+		it('does not mutate the user input', () => {
+			createControl({
+				ignoreAccents: false,
+				ignoreCase: true
+			});
+			typeSearchText('A');
+			expect(asyncNode.textContent.substr(asyncNode.textContent.indexOf('}') + 1), 'to begin with', 'A');
+		});
 	});
 
 	describe('with ignore case and ignore accents', () => {
@@ -377,26 +416,30 @@ describe('Async', () => {
 			});
 
 			describe('if noResultsText has been provided', () => {
-				it('returns the noResultsText', () => {
-					asyncInstance.select = { state: { inputValue: 'asdf' } };
-					expect(asyncInstance.noResultsText(), 'to equal', 'noResultsText');
+				it('returns the noResultsText', (cb) => {
+					asyncInstance.setState({
+						inputValue: 'asfd',
+					}, () => {
+						expect(asyncInstance.noResultsText(), 'to equal', 'noResultsText');
+						cb();
+					});
 				});
 			});
 
 			describe('if noResultsText is empty', () => {
-				beforeEach((cb) => {
+				beforeEach(() => {
 					createControl({
 						searchPromptText: 'searchPromptText',
 						loadingPlaceholder: 'loadingPlaceholder'
 					});
-					asyncInstance.setState({
-						isLoading: false,
-						inputValue: 'asdfkljhadsf'
-					}, cb);
 				});
-				it('falls back to searchPromptText', () => {
-					asyncInstance.select = { state: { inputValue: 'asdf' } };
-					expect(asyncInstance.noResultsText(), 'to equal', 'searchPromptText');
+				it('falls back to searchPromptText', (cb) => {
+					asyncInstance.setState({
+						inputValue: 'asfd',
+					}, () => {
+						expect(asyncInstance.noResultsText(), 'to equal', 'searchPromptText');
+						cb();
+					});
 				});
 			});
 		});
@@ -432,6 +475,65 @@ describe('Async', () => {
 			});
 			typeSearchText('a');
 			return expect(onInputChange, 'was called times', 1);
+		});
+
+		it('should change the value when onInputChange returns a value', () => {
+			const onInputChange = sinon.stub().returns('2');
+			const instance = createControl({
+				onInputChange,
+			});
+			typeSearchText('1');
+			return expect(filterInputNode.value, 'to equal', '2');
+		});
+	});
+
+	describe('.focus()', () => {
+		beforeEach(() => {
+			createControl({});
+			TestUtils.Simulate.blur(filterInputNode);
+		});
+
+		it('focuses the search input', () => {
+			expect(filterInputNode, 'not to equal', document.activeElement);
+			asyncInstance.focus();
+			expect(filterInputNode, 'to equal', document.activeElement);
+		});
+	});
+
+
+	describe('props sync test', () => {
+		it('should update options on componentWillReceiveProps', () => {
+			createControl({});
+			asyncInstance.componentWillReceiveProps({
+				options: [{
+					label: 'bar',
+					value: 'foo',
+				}]
+			});
+			expect(asyncNode.querySelectorAll('[role=option]').length, 'to equal', 1);
+			expect(asyncNode.querySelector('[role=option]').textContent, 'to equal', 'bar');
+		});
+
+		it('should not update options on componentWillReceiveProps', () => {
+			const props = { options: [] };
+			createControl(props);
+
+			const setStateStub = sinon.stub(asyncInstance, 'setState');
+			asyncInstance.componentWillReceiveProps(props);
+
+			expect(setStateStub, 'was not called');
+
+			setStateStub.restore();
+		});
+	});
+
+	describe('componentWillUnmount', () => {
+		it('should set _callback to null', () => {
+			createControl({});
+			expect(asyncInstance._callback, 'not to equal', null);
+
+			asyncInstance.componentWillUnmount();
+			expect(asyncInstance._callback, 'to equal', null);
 		});
 	});
 });
