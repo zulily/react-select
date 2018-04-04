@@ -190,28 +190,6 @@ export default class Async extends Component {
 		this.select.focus();
 	}
 
-	inputValue() {
-		if (this.select) {
-			return this.select.state.inputValue;
-		}
-		return '';
-	}
-
-	noResultsText() {
-		const { loadingPlaceholder, noResultsText, searchPromptText } = this.props;
-		const { isLoading } = this.state;
-
-		const inputValue = this.inputValue();
-
-		if (isLoading) {
-			return loadingPlaceholder;
-		}
-		if (inputValue && noResultsText) {
-			return noResultsText;
-		}
-		return searchPromptText;
-	}
-
 	render () {
 		const { children, loadingPlaceholder, placeholder } = this.props;
 		const { isLoading, options } = this.state;
@@ -230,14 +208,7 @@ export default class Async extends Component {
 			onInputChange: this.onInputChange
 		});
 	}
-
-  focus () {
-    if(this.refs.select !== null) {
-      this.refs.select.focus();
-    }
-  }
 }
-
 
 Async.propTypes = propTypes;
 Async.defaultProps = defaultProps;

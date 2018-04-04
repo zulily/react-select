@@ -8,9 +8,27 @@
 React-Select - Zulily edition
 ============
 
+## Zulily Modifications
 
-This is a modified version of React-Select with a few features
+This is a modified version of React-Select with a few features required by our designers.
 
+We added the following features:
+- Added *clearOptions()* API method to Async (bee)
+- Added *allowCreate* prop to Select (Jamie) - requires multi prop = true; allows user to type anything 
+with options as mere suggestions for like tags.
+- Added *singleValue* prop to Select (Bala) - only display the first selected value when multi = true.
+Prevents multi Select with lots of selected options from growing uncontrolled.  This is combined
+with a custom selected value component that sees this is the first of many and displays 
+"${numberOfSelected} ${whateverThing} selected"  when more than one is selected
+- Added *disabledOptions* prop to Select as passthrough prop ValueComponent (Jamie) -  This can be used by
+a custom value component to make certain options appear grey and disable selection of those values. 
+  
+  
+We are currently based off of v1.2.1 of upstream.  To see the full diff, compare currect branch or master 
+to the upsteam branch snapshot that is saved as origin/upstream-1.2.1 like this:
+```bash
+git diff origin/upstream-1.2.1 .
+``` 
 
 
 A Select control built with and for [React](http://facebook.github.io/react/index.html). Initially built for use in [KeystoneJS](http://www.keystonejs.com).
@@ -232,20 +250,6 @@ function render (selectProps) {
 };
 ```
 
-<<<<<<< HEAD
-##### Creatable properties
-
-Property | Type | Description
-:---|:---|:---
-`children` | function | Child function responsible for creating the inner Select component. This component can be used to compose HOCs (eg Creatable and Async). Expected signature: `(props: Object): PropTypes.element` |
-`isOptionUnique` | function | Searches for any matching option within the set of options. This function prevents duplicate options from being created. By default this is a basic, case-sensitive comparison of label and value. Expected signature: `({ option: Object, options: Array, labelKey: string, valueKey: string }): boolean` |
-`isValidNewOption` | function | Determines if the current input text represents a valid option. By default any non-empty string will be considered valid. Expected signature: `({ label: string }): boolean` |
-`newOptionCreator` | function | Factory to create new option. Expected signature: `({ label: string, labelKey: string, valueKey: string }): Object` |
-`shouldKeyDownEventCreateNewOption` | function | Decides if a keyDown event (eg its `keyCode`) should result in the creation of a new option. ENTER, TAB and comma keys create new options by default. Expected signature: `({ keyCode: number }): boolean` |
-`promptTextCreator` | function | Factory for overriding default option creator prompt label. By default it will read 'Create option "{label}"'. Expected signature: `(label: String): String` |
-
-=======
->>>>>>> 0b5e0fbde84d130ff886327e551877a5dfd43351
 ### Combining Async and Creatable
 
 Use the `AsyncCreatable` HOC if you want both _async_ and _creatable_ functionality.
