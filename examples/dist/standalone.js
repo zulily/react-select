@@ -561,7 +561,11 @@ var Creatable = _react2['default'].createClass({
 });
 
 function defaultChildren(props) {
-	return _react2['default'].createElement(_Select2['default'], props);
+	var _this2 = this;
+
+	return _react2['default'].createElement(_Select2['default'], _extends({ ref: function (ref) {
+			_this2.selectRef = ref;
+		} }, props));
 };
 
 function isOptionUnique(_ref3) {
