@@ -301,6 +301,9 @@ var AsyncCreatable = _react2['default'].createClass({
 					_this.props,
 					function (creatableProps) {
 						return _react2['default'].createElement(_Select2['default'], _extends({}, asyncProps, creatableProps, {
+							ref: function (ref) {
+								_this.selectRef = ref;
+							},
 							onInputChange: function (input) {
 								creatableProps.onInputChange(input);
 								return asyncProps.onInputChange(input);
