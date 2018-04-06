@@ -217,7 +217,7 @@ const Creatable = React.createClass({
 
 function defaultChildren (props) {
 	return (
-		<Select ref={(ref) => {this.selectRef = ref;}} {...props} />
+		<Select {...props} />
 	);
 };
 

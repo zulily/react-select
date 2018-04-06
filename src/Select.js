@@ -860,7 +860,9 @@ const Select = React.createClass({
   					);
   				});
 			}
-		} else if (!this.state.inputValue) {
+		} else if (this.props.clearValueComponent){
+      <div></div>
+    } else if (!this.state.inputValue) {
 			if (isOpen) onClick = null;
 			return (
 				<ValueComponent
