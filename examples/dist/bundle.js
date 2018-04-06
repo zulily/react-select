@@ -1999,6 +1999,19 @@ var Select = _react2['default'].createClass({
 			if (this.props.autosize) {
 				return _react2['default'].createElement(_reactInputAutosize2['default'], _extends({}, inputProps, { minWidth: '5' }));
 			}
+
+			if (this.props.showClearOnInputActive) {
+				return _react2['default'].createElement(
+					'div',
+					{ className: className },
+					_react2['default'].createElement('input', inputProps),
+					_react2['default'].createElement(
+						'span',
+						{ onClick: this.clearValue },
+						'x'
+					)
+				);
+			}
 			return _react2['default'].createElement(
 				'div',
 				{ className: className },

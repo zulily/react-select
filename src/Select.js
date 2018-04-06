@@ -938,6 +938,15 @@ const Select = React.createClass({
 					<AutosizeInput {...inputProps} minWidth="5" />
 				);
 			}
+      
+      if (this.props.showClearOnInputActive){
+        return (
+          <div className={ className }>
+  					<input {...inputProps} />
+            <span onClick={this.clearValue}>x</span>
+  				</div>
+        )
+      }
 			return (
 				<div className={ className }>
 					<input {...inputProps} />
