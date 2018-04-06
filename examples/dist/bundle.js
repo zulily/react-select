@@ -1970,7 +1970,8 @@ var Select = _react2['default'].createClass({
 					return _this5.input = _ref;
 				},
 				required: this.state.required,
-				value: this.state.inputValue
+				value: this.state.inputValue,
+				defaultValue: this.getDefaultValue()
 			});
 
 			if (this.props.disabled || !this.props.searchable) {
@@ -2003,6 +2004,14 @@ var Select = _react2['default'].createClass({
 				{ className: className },
 				_react2['default'].createElement('input', inputProps)
 			);
+		}
+	},
+
+	getDefaultValue: function getDefaultValue() {
+		if (this.props.clearValueComponent) {
+			this.getValueArray(this.props.value);
+		} else {
+			return null;
 		}
 	},
 

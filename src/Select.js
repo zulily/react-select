@@ -909,8 +909,10 @@ const Select = React.createClass({
 				onFocus: this.handleInputFocus,
 				ref: ref => this.input = ref,
 				required: this.state.required,
-				value: this.state.inputValue
+				value: this.state.inputValue,
+        defaultValue: this.getDefaultValue()
 			});
+      
 
 			if (this.props.disabled || !this.props.searchable) {
 				const { inputClassName, ...divProps } = this.props.inputProps;
@@ -944,6 +946,14 @@ const Select = React.createClass({
 		}
 	},
 
+  getDefaultValue () {
+    if(this.props.clearValueComponent){
+      this.getValueArray(this.props.value);
+    } else {
+      return null
+    }
+  },
+  
 	renderClear () {
 		if (!this.props.clearable || (!this.props.value || this.props.value === 0) || (this.props.multi && !this.props.value.length) || this.props.disabled || this.props.isLoading) return;
 		return (
