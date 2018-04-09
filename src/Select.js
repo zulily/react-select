@@ -862,6 +862,19 @@ const Select = React.createClass({
 			}
 		} else if (isOpen && this.props.hideValueOnFocus) {
       return;
+    } else if (!isOpen && this.props.hideValueOnFocus){
+      return (
+        <ValueComponent
+        id={this._instancePrefix + '-value-item'}
+        disabled={this.props.disabled}
+        instancePrefix={this._instancePrefix}
+        onClick={onClick}
+        value={valueArray[0]}
+        onRemove={this.removeValue}
+      >
+        {renderLabel(valueArray[0])}
+      </ValueComponent>
+    )
     } else if (!this.state.inputValue) {
 			if (isOpen) onClick = null;
 			return (

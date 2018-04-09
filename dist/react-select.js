@@ -1679,6 +1679,19 @@ var Select = _react2['default'].createClass({
 			}
 		} else if (isOpen && this.props.hideValueOnFocus) {
 			return;
+		} else if (!isOpen && this.props.hideValueOnFocus) {
+			return _react2['default'].createElement(
+				ValueComponent,
+				{
+					id: this._instancePrefix + '-value-item',
+					disabled: this.props.disabled,
+					instancePrefix: this._instancePrefix,
+					onClick: onClick,
+					value: valueArray[0],
+					onRemove: this.removeValue
+				},
+				renderLabel(valueArray[0])
+			);
 		} else if (!this.state.inputValue) {
 			if (isOpen) onClick = null;
 			return _react2['default'].createElement(
