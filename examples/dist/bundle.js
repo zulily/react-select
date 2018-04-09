@@ -1921,8 +1921,6 @@ var Select = _react2['default'].createClass({
 					);
 				});
 			}
-		} else if (this.props.clearValueComponent) {
-			_react2['default'].createElement('div', null);
 		} else if (!this.state.inputValue) {
 			if (isOpen) onClick = null;
 			return _react2['default'].createElement(
@@ -1970,8 +1968,7 @@ var Select = _react2['default'].createClass({
 					return _this5.input = _ref;
 				},
 				required: this.state.required,
-				value: this.state.inputValue,
-				defaultValue: this.getDefaultValue()
+				value: this.state.inputValue
 			});
 
 			if (this.props.disabled || !this.props.searchable) {
@@ -1999,32 +1996,11 @@ var Select = _react2['default'].createClass({
 			if (this.props.autosize) {
 				return _react2['default'].createElement(_reactInputAutosize2['default'], _extends({}, inputProps, { minWidth: '5' }));
 			}
-
-			if (this.props.showClearOnInputActive) {
-				return _react2['default'].createElement(
-					'div',
-					{ className: className },
-					_react2['default'].createElement('input', inputProps),
-					_react2['default'].createElement(
-						'span',
-						{ onClick: this.clearValue },
-						'x'
-					)
-				);
-			}
 			return _react2['default'].createElement(
 				'div',
 				{ className: className },
 				_react2['default'].createElement('input', inputProps)
 			);
-		}
-	},
-
-	getDefaultValue: function getDefaultValue() {
-		if (this.props.clearValueComponent) {
-			this.getValueArray(this.props.value);
-		} else {
-			return null;
 		}
 	},
 
