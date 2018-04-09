@@ -2015,12 +2015,11 @@ var Select = _react2['default'].createClass({
 	},
 
 	renderClearInput: function renderClearInput() {
-		if (this.state.inputValue.length > 0) return _react2['default'].createElement(
+		return _react2['default'].createElement(
 			'span',
 			{ onClick: this.clearInput },
 			'x'
 		);
-		return;
 	},
 
 	clearInput: function clearInput() {

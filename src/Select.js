@@ -951,11 +951,9 @@ const Select = React.createClass({
 	},
 
   renderClearInput () {
-    if (this.state.inputValue.length > 0)
-      return (
-        <span onClick={this.clearInput}>x</span>
-      )
-    return;
+    return (
+      <span onClick={this.clearInput}>x</span>
+    )
   },
   
   clearInput () {
