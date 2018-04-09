@@ -1921,6 +1921,8 @@ var Select = _react2['default'].createClass({
 					);
 				});
 			}
+		} else if (isOpen && this.props.hideValueOnFocus) {
+			return;
 		} else if (!this.state.inputValue) {
 			if (isOpen) onClick = null;
 			return _react2['default'].createElement(
