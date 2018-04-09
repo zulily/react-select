@@ -1974,7 +1974,7 @@ var Select = _react2['default'].createClass({
 			});
 
 			if (this.props.hideValueOnFocus) {
-				_react2['default'].createElement(
+				return _react2['default'].createElement(
 					'div',
 					{ className: className },
 					_react2['default'].createElement('input', inputProps),

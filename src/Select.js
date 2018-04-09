@@ -913,10 +913,12 @@ const Select = React.createClass({
 			});
 
       if (this.props.hideValueOnFocus) {
-        <div className={ className }>
-					<input {...inputProps} />
-          {this.renderClearInput()}
-				</div>
+        return (
+          <div className={ className }>
+					     <input {...inputProps} />
+               {this.renderClearInput()}
+				  </div>
+        );
       }
 			if (this.props.disabled || !this.props.searchable) {
 				const { inputClassName, ...divProps } = this.props.inputProps;
@@ -955,7 +957,7 @@ const Select = React.createClass({
       <span onClick={this.clearInput}>
         <span className="Select-clear" dangerouslySetInnerHTML={{ __html: '&times;' }} />
       </span>
-    )
+    );
   },
   
   clearInput () {
