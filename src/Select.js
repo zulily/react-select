@@ -911,6 +911,15 @@ const Select = React.createClass({
 				required: this.state.required,
 				value: this.state.inputValue
 			});
+      
+      if (this.props.hideValueOnFocus) {
+        return (
+          <div className={ className }>
+					     <input {...inputProps} />
+               {this.renderClearInput()}
+				  </div>
+        );
+      }
 
 			if (this.props.disabled || !this.props.searchable) {
 				const { inputClassName, ...divProps } = this.props.inputProps;
