@@ -953,11 +953,15 @@ const Select = React.createClass({
 	},
 
   renderClearInput () {
-    return (
-      <span onClick={this.clearInput}>
-        <span className="Select-clear" dangerouslySetInnerHTML={{ __html: '&times;' }} />
-      </span>
-    );
+    if (this.state.inputValue.length > 0){
+      return (
+        <span onClick={this.clearInput}>
+          <span className="Select-clear" dangerouslySetInnerHTML={{ __html: '&times;' }} />
+        </span>
+      );
+    } else {
+      return;
+    }
   },
   
   clearInput () {
