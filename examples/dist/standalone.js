@@ -1679,19 +1679,6 @@ var Select = _react2['default'].createClass({
 			}
 		} else if (isOpen && this.props.hideValueOnFocus) {
 			return;
-		} else if (!isOpen && this.props.hideValueOnFocus) {
-			return _react2['default'].createElement(
-				ValueComponent,
-				{
-					id: this._instancePrefix + '-value-item',
-					disabled: this.props.disabled,
-					instancePrefix: this._instancePrefix,
-					onClick: onClick,
-					value: valueArray[0],
-					onRemove: this.removeValue
-				},
-				renderLabel(valueArray[0])
-			);
 		} else if (!this.state.inputValue) {
 			if (isOpen) onClick = null;
 			return _react2['default'].createElement(
@@ -1742,6 +1729,14 @@ var Select = _react2['default'].createClass({
 				value: this.state.inputValue
 			});
 
+			if (this.props.hideValueOnFocus) {
+				_react2['default'].createElement(
+					'div',
+					{ className: className },
+					_react2['default'].createElement('input', inputProps),
+					this.renderClearInput()
+				);
+			}
 			if (this.props.disabled || !this.props.searchable) {
 				var _props$inputProps = this.props.inputProps;
 				var inputClassName = _props$inputProps.inputClassName;
@@ -1773,6 +1768,19 @@ var Select = _react2['default'].createClass({
 				_react2['default'].createElement('input', inputProps)
 			);
 		}
+	},
+
+	renderClearInput: function renderClearInput() {
+		if (this.state.inputValue.length > 0) return _react2['default'].createElement(
+			'span',
+			{ onClick: this.clearInput },
+			'x'
+		);
+		return;
+	},
+
+	clearInput: function clearInput() {
+		this.setState({ inputValue: '' });
 	},
 
 	renderClear: function renderClear() {

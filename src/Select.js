@@ -862,19 +862,6 @@ const Select = React.createClass({
 			}
 		} else if (isOpen && this.props.hideValueOnFocus) {
       return;
-    } else if (!isOpen && this.props.hideValueOnFocus){
-      return (
-        <ValueComponent
-        id={this._instancePrefix + '-value-item'}
-        disabled={this.props.disabled}
-        instancePrefix={this._instancePrefix}
-        onClick={onClick}
-        value={valueArray[0]}
-        onRemove={this.removeValue}
-      >
-        {renderLabel(valueArray[0])}
-      </ValueComponent>
-    )
     } else if (!this.state.inputValue) {
 			if (isOpen) onClick = null;
 			return (
@@ -925,6 +912,12 @@ const Select = React.createClass({
 				value: this.state.inputValue
 			});
 
+      if (this.props.hideValueOnFocus) {
+        <div className={ className }>
+					<input {...inputProps} />
+          {this.renderClearInput()}
+				</div>
+      }
 			if (this.props.disabled || !this.props.searchable) {
 				const { inputClassName, ...divProps } = this.props.inputProps;
 				return (
@@ -957,6 +950,18 @@ const Select = React.createClass({
 		}
 	},
 
+  renderClearInput () {
+    if (this.state.inputValue.length > 0)
+      return (
+        <span onClick={this.clearInput}>x</span>
+      )
+    return;
+  },
+  
+  clearInput () {
+    this.setState({inputValue: ''});
+  },
+  
 	renderClear () {
 		if (!this.props.clearable || (!this.props.value || this.props.value === 0) || (this.props.multi && !this.props.value.length) || this.props.disabled || this.props.isLoading) return;
 		return (
