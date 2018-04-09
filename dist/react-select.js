@@ -891,9 +891,10 @@ var Select = _react2['default'].createClass({
 		displayAll: _react2['default'].PropTypes.bool, // Display all the contents in the dropdown, even after selecting few of the entries from it, this is applicable only when multi is true
 		singleValue: _react2['default'].PropTypes.bool, // Send only a single value to the Custom Value Component
 		allowCreate: _react2['default'].PropTypes.bool, // whether to allow creation of new entries
-		disabledOptions: _react2['default'].PropTypes.array // tells which tags are disabled
-	},
+		disabledOptions: _react2['default'].PropTypes.array, // tells which tags are disabled
+		hideValueOnFocus: _react2['default'].PropTypes.bool },
 
+	// tells to not render the Value component when focusing on the input
 	statics: { Async: _Async2['default'], AsyncCreatable: _AsyncCreatable2['default'], Creatable: _Creatable2['default'] },
 
 	getDefaultProps: function getDefaultProps() {
