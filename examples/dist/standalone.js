@@ -888,9 +888,10 @@ var Select = _react2['default'].createClass({
 		displayAll: _react2['default'].PropTypes.bool, // Display all the contents in the dropdown, even after selecting few of the entries from it, this is applicable only when multi is true
 		singleValue: _react2['default'].PropTypes.bool, // Send only a single value to the Custom Value Component
 		allowCreate: _react2['default'].PropTypes.bool, // whether to allow creation of new entries
-		disabledOptions: _react2['default'].PropTypes.array // tells which tags are disabled
-	},
+		disabledOptions: _react2['default'].PropTypes.array, // tells which tags are disabled
+		hideValueOnFocus: _react2['default'].PropTypes.bool },
 
+	// tells to not render the Value component when focusing on the input
 	statics: { Async: _Async2['default'], AsyncCreatable: _AsyncCreatable2['default'], Creatable: _Creatable2['default'] },
 
 	getDefaultProps: function getDefaultProps() {
@@ -1426,9 +1427,6 @@ var Select = _react2['default'].createClass({
 		//NOTE: update value in the callback to make sure the input value is empty so that there are no styling issues (Chrome had issue otherwise)
 		this.hasScrolledToOption = false;
 		if (this.props.multi) {
-			if (this.props.allowCreate) {
-				value = this.expandValue(value, this.props);
-			}
 			this.setState({
 				inputValue: '',
 				focusedIndex: null
@@ -1649,7 +1647,13 @@ var Select = _react2['default'].createClass({
 					valueArray.length
 				);
 			} else {
-				return valueArray.map(function (value, i) {
+				if (this.props.autoFillInputWithValue && isOpen) {
+					return _react2['default'].createElement(
+						'div',
+						null,
+						'Open'
+					);
+				} else return valueArray.map(function (value, i) {
 					return _react2['default'].createElement(
 						ValueComponent,
 						{
@@ -1671,6 +1675,8 @@ var Select = _react2['default'].createClass({
 					);
 				});
 			}
+		} else if (isOpen && this.props.hideValueOnFocus) {
+			return;
 		} else if (!this.state.inputValue) {
 			if (isOpen) onClick = null;
 			return _react2['default'].createElement(
@@ -1721,6 +1727,14 @@ var Select = _react2['default'].createClass({
 				value: this.state.inputValue
 			});
 
+			if (this.props.hideValueOnFocus) {
+				return _react2['default'].createElement(
+					'div',
+					{ className: className },
+					_react2['default'].createElement('input', inputProps),
+					this.renderClearInput()
+				);
+			}
 			if (this.props.disabled || !this.props.searchable) {
 				var _props$inputProps = this.props.inputProps;
 				var inputClassName = _props$inputProps.inputClassName;
@@ -1752,6 +1766,22 @@ var Select = _react2['default'].createClass({
 				_react2['default'].createElement('input', inputProps)
 			);
 		}
+	},
+
+	renderClearInput: function renderClearInput() {
+		if (this.state.inputValue.length > 0) {
+			return _react2['default'].createElement(
+				'span',
+				{ onClick: this.clearInput },
+				_react2['default'].createElement('span', { className: 'Select-clear Clear-input', dangerouslySetInnerHTML: { __html: '&times;' } })
+			);
+		} else {
+			return;
+		}
+	},
+
+	clearInput: function clearInput() {
+		this.setState({ inputValue: '' });
 	},
 
 	renderClear: function renderClear() {
