@@ -114,7 +114,7 @@ const Select = React.createClass({
 		displayAll: React.PropTypes.bool,           // Display all the contents in the dropdown, even after selecting few of the entries from it, this is applicable only when multi is true
 		singleValue: React.PropTypes.bool,          // Send only a single value to the Custom Value Component
 		allowCreate: React.PropTypes.bool,          // whether to allow creation of new entries
-    disabledOptions: React.PropTypes.array,    // tells which tags are disabled
+    disabledOptions: React.PropTypes.array,     // tells which tags are disabled
     hideValueOnFocus: React.PropTypes.bool,     // tells to not render the Value component when focusing on the input
 	},
 
@@ -627,9 +627,6 @@ const Select = React.createClass({
 		//NOTE: update value in the callback to make sure the input value is empty so that there are no styling issues (Chrome had issue otherwise)
 		this.hasScrolledToOption = false;
 		if (this.props.multi) {
-			if (this.props.allowCreate) {
-				value = this.expandValue(value, this.props);
-			}
 			this.setState({
 				inputValue: '',
 				focusedIndex: null
@@ -646,7 +643,7 @@ const Select = React.createClass({
 			});
 		}
 	},
-
+  
   addRemoveValue: function addRemoveValue(valueObj) {
     var valueArray = this.getValueArray(this.props.value);
     if (!this.arrayContains(valueArray, valueObj.value)) {
@@ -654,14 +651,14 @@ const Select = React.createClass({
     } else {
       this.removeValue(valueObj);
     }
-  },
-
+  },  
+  
   arrayContains: function arrayContains(values, value) {
     return values.map(function (valueObj) {
       return valueObj.value;
     }).indexOf(value) > -1;
   },
-
+	
   addValue (value) {
 		var valueArray = this.getValueArray(this.props.value);
 		this.setValue(valueArray.concat(value));
@@ -842,25 +839,29 @@ const Select = React.createClass({
 				);
 			}
 			else {
-				return valueArray.map((value, i) => {
-					return (
-						<ValueComponent
-							id={this._instancePrefix + '-value-' + i}
-							instancePrefix={this._instancePrefix}
-							disabled={this.props.disabled || value.clearableValue === false}
-							key={`value-${i}-${value[this.props.valueKey]}`}
-							onClick={onClick}
-							onRemove={this.removeValue}
-							value={value}
-              				disabledOptions={this.props.disabledOptions || []}
-						>
-							{renderLabel(value, i)}
-							<span className="Select-aria-only">&nbsp;</span>
-						</ValueComponent>
-					);
-				});
+        if(this.props.autoFillInputWithValue && isOpen) {
+          return <div>Open</div>
+        }
+        else
+  				return valueArray.map((value, i) => {
+  					return (
+  						<ValueComponent
+  							id={this._instancePrefix + '-value-' + i}
+  							instancePrefix={this._instancePrefix}
+  							disabled={this.props.disabled || value.clearableValue === false}
+  							key={`value-${i}-${value[this.props.valueKey]}`}
+  							onClick={onClick}
+  							onRemove={this.removeValue}
+  							value={value}
+                				disabledOptions={this.props.disabledOptions || []}
+  						>
+  							{renderLabel(value, i)}
+  							<span className="Select-aria-only">&nbsp;</span>
+  						</ValueComponent>
+  					);
+  				});
 			}
-    } else if (isOpen && this.props.hideValueOnFocus) {
+		} else if (isOpen && this.props.hideValueOnFocus) {
       return;
     } else if (!this.state.inputValue) {
 			if (isOpen) onClick = null;
@@ -911,7 +912,7 @@ const Select = React.createClass({
 				required: this.state.required,
 				value: this.state.inputValue
 			});
-      
+
       if (this.props.hideValueOnFocus) {
         return (
           <div className={ className }>
@@ -920,7 +921,6 @@ const Select = React.createClass({
 				  </div>
         );
       }
-
 			if (this.props.disabled || !this.props.searchable) {
 				const { inputClassName, ...divProps } = this.props.inputProps;
 				return (
@@ -953,6 +953,22 @@ const Select = React.createClass({
 		}
 	},
 
+  renderClearInput () {
+    if (this.state.inputValue.length > 0){
+      return (
+        <span onClick={this.clearInput}>
+          <span className="Select-clear" dangerouslySetInnerHTML={{ __html: '&times;' }} />
+        </span>
+      );
+    } else {
+      return;
+    }
+  },
+  
+  clearInput () {
+    this.setState({inputValue: ''});
+  },
+  
 	renderClear () {
 		if (!this.props.clearable || (!this.props.value || this.props.value === 0) || (this.props.multi && !this.props.value.length) || this.props.disabled || this.props.isLoading) return;
 		return (
@@ -985,9 +1001,6 @@ const Select = React.createClass({
 	filterOptions (excludeOptions) {
 		var filterValue = this.state.inputValue;
 		var options = this.props.options || [];
-    if (filterValue !== null && options == [] && this.props.collection.models.length > 0){
-      options = this.props.collection.models
-    }
 		if (this.props.filterOptions) {
 			// Maintain backwards compatibility with boolean attribute
 			const filterOptions = typeof this.props.filterOptions === 'function'
