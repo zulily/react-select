@@ -114,7 +114,8 @@ const Select = React.createClass({
 		displayAll: React.PropTypes.bool,           // Display all the contents in the dropdown, even after selecting few of the entries from it, this is applicable only when multi is true
 		singleValue: React.PropTypes.bool,          // Send only a single value to the Custom Value Component
 		allowCreate: React.PropTypes.bool,          // whether to allow creation of new entries
-    	disabledOptions: React.PropTypes.array     // tells which tags are disabled
+    disabledOptions: React.PropTypes.array,    // tells which tags are disabled
+    hideValueOnFocus: React.PropTypes.bool,     // tells to not render the Value component when focusing on the input
 	},
 
 	statics: { Async, AsyncCreatable, Creatable },
