@@ -952,7 +952,9 @@ const Select = React.createClass({
 
   renderClearInput () {
     return (
-      <span onClick={this.clearInput}>x</span>
+      <span onClick={this.clearInput}>
+        <span className="Select-clear" dangerouslySetInnerHTML={{ __html: '&times;' }} />
+      </span>
     )
   },
   

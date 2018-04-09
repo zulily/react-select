@@ -1774,7 +1774,7 @@ var Select = _react2['default'].createClass({
 		return _react2['default'].createElement(
 			'span',
 			{ onClick: this.clearInput },
-			'x'
+			_react2['default'].createElement('span', { className: 'Select-clear', dangerouslySetInnerHTML: { __html: '&times;' } })
 		);
 	},
 
