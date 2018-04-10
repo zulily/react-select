@@ -952,6 +952,22 @@ const Select = React.createClass({
 			);
 		}
 	},
+  
+  renderClearInput () {
+    if (this.state.inputValue.length > 0){
+      return (
+        <span onClick={this.clearInput}>
+          <span className="Select-clear Clear-input" dangerouslySetInnerHTML={{ __html: '&times;' }} />
+        </span>
+      );
+    } else {
+      return;
+    }
+  },
+  
+  clearInput () {
+    this.setState({inputValue: ''});
+  },
 
 	renderClear () {
 		if (!this.props.clearable || (!this.props.value || this.props.value === 0) || (this.props.multi && !this.props.value.length) || this.props.disabled || this.props.isLoading) return;
