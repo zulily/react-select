@@ -1,0 +1,109 @@
+diff --git a/src/Async.js b/src/Async.js
+index 66810ee..1a4ca43 100644
+--- a/src/Async.js
++++ b/src/Async.js
+@@ -84,6 +84,10 @@ export default class Async extends Component {
+ 		this._callback = null;
+ 	}
+ 
++	clearOptions() {
++		this.setState({ options: [] });
++	}
++
+ 	loadOptions (inputValue) {
+ 		const { loadOptions } = this.props;
+ 		const cache = this._cache;
+diff --git a/src/Select.js b/src/Select.js
+index 17d49de..6701130 100644
+--- a/src/Select.js
++++ b/src/Select.js
+@@ -66,6 +66,12 @@ const expandValue = (value, props) => {
+ 	for (let i = 0; i < options.length; i++) {
+ 		if (String(options[i][valueKey]) === String(value)) return options[i];
+ 	}
++  if (props.allowCreate) {
++    var newOption = {};
++    newOption[valueKey] = value;
++    newOption[labelKey] = value;
++    return newOption;
++  }
+ };
+ 
+ const handleRequired = (value, multi) => {
+@@ -544,6 +550,15 @@ class Select extends React.Component {
+ 				}
+ 				event.preventDefault();
+ 				this.focusStartOption();
++			break;
++			case 188: // comma , key
++				if (this.props.allowCreate && this.props.multi) {
++					event.preventDefault();
++					event.stopPropagation();
++					this.selectFocusedOption();
++				} else {
++					return;
++				}
+ 				break;
+ 			case 46: // delete
+ 				if (!this.state.inputValue && this.props.deleteRemoves) {
+@@ -618,6 +633,9 @@ class Select extends React.Component {
+ 		}
+ 		const updatedValue = this.props.onSelectResetsInput ? '' : this.state.inputValue;
+ 		if (this.props.multi) {
++			if (this.props.allowCreate) {
++				value = this.expandValue(value, this.props);
++			}
+ 			this.setState({
+ 				focusedIndex: null,
+ 				inputValue: this.handleInputValueChange(updatedValue),
+@@ -796,6 +814,9 @@ class Select extends React.Component {
+ 		if (this._focusedOption) {
+ 			return this.selectValue(this._focusedOption);
+ 		}
++		else if (this.props.allowCreate && !this.state.focusedOption) {
++			return this.selectValue(this.state.inputValue);
++		}
+ 	}
+ 
+ 	renderLoading () {
+@@ -816,10 +837,14 @@ class Select extends React.Component {
+ 		}
+ 		let onClick = this.props.onValueClick ? this.handleValueClick : null;
+ 		if (this.props.multi) {
++			if(this.props.singleValue) {
++				valueArray = [valueArray[0]];
++			}
+ 			return valueArray.map((value, i) => {
+ 				return (
+ 					<ValueComponent
+ 						disabled={this.props.disabled || value.clearableValue === false}
++			            disabledOptions={this.props.disabledOptions || []}
+ 						id={this._instancePrefix + '-value-' + i}
+ 						instancePrefix={this._instancePrefix}
+ 						key={`value-${i}-${value[this.props.valueKey]}`}
+@@ -843,6 +868,7 @@ class Select extends React.Component {
+ 					onClick={onClick}
+ 					placeholder={this.props.placeholder}
+ 					value={valueArray[0]}
++					disabledOptions={this.props.disabledOptions || []}
+ 				>
+ 					{renderLabel(valueArray[0])}
+ 				</ValueComponent>
+@@ -925,7 +951,7 @@ class Select extends React.Component {
+ 			);
+ 		}
+ 		return (
+-			<div className={ className } key="input-wrap" style={{display: 'inline-block'}}>
++			<div className={ className } key="input-wrap" style={{ display: 'inline-block' }}>
+ 				<input id={this.props.id} {...inputProps} />
+ 			</div>
+ 		);
+@@ -1182,7 +1208,7 @@ class Select extends React.Component {
+ 					{this.renderClear()}
+ 					{this.renderArrow()}
+ 				</div>
+-				{isOpen ? this.renderOuter(options, valueArray, focusedOption) : null}
++				{isOpen ? this.renderOuter(options, !this.props.multi || this.props.singleValue ? valueArray : null, focusedOption) : null}
+ 			</div>
+ 		);
+ 	}
