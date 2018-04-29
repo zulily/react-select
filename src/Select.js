@@ -828,6 +828,7 @@ class Select extends React.Component {
 		);
 	}
 
+
 	renderValue (valueArray, isOpen) {
 		let renderLabel = this.props.valueRenderer || this.getOptionLabel;
 		let ValueComponent = this.props.valueComponent;
@@ -836,27 +837,40 @@ class Select extends React.Component {
 			return showPlaceholder ? <div className="Select-placeholder">{this.props.placeholder}</div> : null;
 		}
 		let onClick = this.props.onValueClick ? this.handleValueClick : null;
-		if (this.props.multi) {
-			let valuesToMap = this.props.singleValue ? [valueArray[0]] : valueArray;
-			return valuesToMap.map((value, i) => {
+    if (this.props.multi) {
+			if(this.props.singleValue) {
 				return (
 					<ValueComponent
-						disabled={this.props.disabled || value.clearableValue === false}
-						disabledOptions={this.props.disabledOptions || []}
-						id={this._instancePrefix + '-value-' + i}
-						instancePrefix={this._instancePrefix}
-						key={`value-${i}-${value[this.props.valueKey]}`}
+						disabled={this.props.disabled}
 						onClick={onClick}
 						onRemove={this.removeValue}
-						placeholder={this.props.placeholder}
-						value={value}
 						values={valueArray}
+						disabledOptions={this.props.disabledOptions || []}
 					>
-						{renderLabel(value, i)}
-						<span className="Select-aria-only">&nbsp;</span>
+						{valueArray.length}
 					</ValueComponent>
 				);
-			});
+			}
+			else {
+				return valueArray.map((value, i) => {
+					return (
+						<ValueComponent
+							id={this._instancePrefix + '-value-' + i}
+							instancePrefix={this._instancePrefix}
+							disabled={this.props.disabled || value.clearableValue === false}
+							key={`value-${i}-${value[this.props.valueKey]}`}
+							onClick={onClick}
+							onRemove={this.removeValue}
+							value={value}
+							values={valueArray}
+							disabledOptions={this.props.disabledOptions || []}
+						>
+							{renderLabel(value, i)}
+							<span className="Select-aria-only">&nbsp;</span>
+						</ValueComponent>
+					);
+				});
+			}
 		} else if (shouldShowValue(this.state, this.props)) {
 			if (isOpen) onClick = null;
 			return (
@@ -869,6 +883,7 @@ class Select extends React.Component {
 					placeholder={this.props.placeholder}
 					value={valueArray[0]}
 					values={valueArray}
+					disabledOptions={this.props.disabledOptions || []}
 				>
 					{renderLabel(valueArray[0])}
 				</ValueComponent>
