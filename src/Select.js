@@ -828,6 +828,7 @@ class Select extends React.Component {
 		);
 	}
 
+
 	renderValue (valueArray, isOpen) {
 		let renderLabel = this.props.valueRenderer || this.getOptionLabel;
 		let ValueComponent = this.props.valueComponent;
@@ -837,12 +838,14 @@ class Select extends React.Component {
 		}
 		let onClick = this.props.onValueClick ? this.handleValueClick : null;
 		if (this.props.multi) {
-			let valuesToMap = this.props.singleValue ? [valueArray[0]] : valueArray;
-			return valuesToMap.map((value, i) => {
+			if(this.props.singleValue) {
+				valueArray = [valueArray[0]];
+			}
+			return valueArray.map((value, i) => {
 				return (
 					<ValueComponent
 						disabled={this.props.disabled || value.clearableValue === false}
-						disabledOptions={this.props.disabledOptions || []}
+			            disabledOptions={this.props.disabledOptions || []}
 						id={this._instancePrefix + '-value-' + i}
 						instancePrefix={this._instancePrefix}
 						key={`value-${i}-${value[this.props.valueKey]}`}
@@ -862,7 +865,6 @@ class Select extends React.Component {
 			return (
 				<ValueComponent
 					disabled={this.props.disabled}
-					disabledOptions={this.props.disabledOptions || []}
 					id={this._instancePrefix + '-value-item'}
 					instancePrefix={this._instancePrefix}
 					onClick={onClick}
