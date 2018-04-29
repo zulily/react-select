@@ -1575,6 +1575,7 @@ var Select$1 = function (_React$Component) {
 						onClick: onClick,
 						placeholder: this.props.placeholder,
 						value: valueArray[0],
+						values: valueArray,
 						disabledOptions: this.props.disabledOptions || []
 					},
 					renderLabel(valueArray[0])
